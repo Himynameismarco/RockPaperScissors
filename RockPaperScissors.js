@@ -1,38 +1,32 @@
 console.log("Hello World!");
 
+const startScreen = document.querySelector('.startScreen');
+startScreen.addEventListener('click', game);
+const playBoard = document.querySelector('.playBoard');
+
+const btnSchere = document.querySelector('#Schere');
+btnSchere.addEventListener('click', playRound);
+const btnStein = document.querySelector('#Stein');
+btnStein.addEventListener('click', playRound);
+const btnPapier = document.querySelector('#Papier');
+btnPapier.addEventListener('click', playRound);
+
+var count = 0;
+let playerWonCount = 0;
+let computerWonCount = 0;
+
+
+
 function game() {
-  let playerWonCount = 0;
-  let computerWonCount = 0;
-  for (let i = 0; i < 5; i++) {
-    let computerChoice = getComputerChoice();
-    let playerChoice = prompt("Schere, Stein oder Papier?");
-    let endGameMessage = playRound(computerChoice, playerChoice);
-    if (endGameMessage.startsWith("Ihr habt")) {
-      //nothing
-    }
-    if (endGameMessage.startsWith("Du hast")) {
-      computerWonCount++;
-    }
-    if (endGameMessage.startsWith("GEWONNEN")) {
-      playerWonCount++;
-    }
-    if ((i === 4 && playerWonCount === computerWonCount) || endGameMessage.startsWith("Falscher")) {
-      i--;
-    }
-    console.log("Game count: " + (i + 1));
-    console.log("You won " + playerWonCount + " matches so far, "
-        + "the computer won " + computerWonCount + " matches so far.");
-  }
-  if (playerWonCount > computerWonCount) {
-    alert("GAME WON!");
-  } else {
-    alert("YOU LOST.")
-  }
+  startScreen.style.display = 'none';
+  playBoard.style.display = 'block';
 }
 
 
-function playRound(computerChoice, playerChoice) {
-  console.log("Computer Choice: " + getComputerChoice());
+function playRound(e) {
+  let computerChoice = getComputerChoice();
+  let playerChoice = e.target.id;
+  console.log("Computer Choice: " + computerChoice);
   console.log("Player Choice: " + playerChoice);
   playerChoice = playerChoice.toLowerCase();
   computerChoice = computerChoice.toLowerCase();
@@ -41,28 +35,58 @@ function playRound(computerChoice, playerChoice) {
   const schere = "Schere";
   const stein = "Stein";
   const papier = "Papier";
-  let endGameMessage = "";
+  let endRoundMessage = "";
   if (playerChoice === schere || playerChoice === stein || playerChoice === papier ) {
     if (playerChoice === computerChoice) {
-      endGameMessage = "Ihr habt beide " + playerChoice + " gewählt: Nochmal!";
+      endRoundMessage = "Ihr habt beide " + playerChoice + " gewählt: Nochmal!";
     } else {
       if ((playerChoice === schere && computerChoice === stein)
           || (playerChoice === stein && computerChoice === papier)
           || (playerChoice === papier && computerChoice === schere)) {
-        endGameMessage = "Du hast die Runde verloren! Der Computer hatte: " + computerChoice;
+        endRoundMessage = "Du hast die Runde verloren! Der Computer hatte: " + computerChoice;
       } else {
-        endGameMessage = "GEWONNEN!!!! (zumindest diese Runde) Der Computer hatte: " + computerChoice;
+        endRoundMessage = "GEWONNEN!!!! (zumindest diese Runde) Der Computer hatte: " + computerChoice;
       }
     }
   } else {
     console.warn("Wrong input.")
-    endGameMessage = "Falscher input! Bitte gib 'Schere' oder 'Stein' oder 'Papier' ein.";
+    endRoundMessage = "Falscher input! Bitte gib 'Schere' oder 'Stein' oder 'Papier' ein.";
   }
+  if (endRoundMessage.startsWith("Ihr habt")) {
+    // nothing
+  }
+  if (endRoundMessage.startsWith("Du hast")) {
+    computerWonCount++;
+  }
+  if (endRoundMessage.startsWith("GEWONNEN")) {
+    playerWonCount++;
+  }
+  if ((count === 4 && playerWonCount === computerWonCount) || endRoundMessage.startsWith("Falscher")) {
+    count--;
+  }
+  count++;
+  let currentId = count.toString();
+  var paragraph = document.createElement('p');
+  paragraph.textContent = endRoundMessage;
+  document.getElementById(currentId).appendChild(paragraph);
+  console.log(endRoundMessage);
+  if (count === 5) {
+    setTimeout(function () {
+      if (playerWonCount == computerWonCount) {
+        alert("Ein Unentschieden!")
+      }
+      if (playerWonCount > computerWonCount) {
+        alert("Du hast gewonnen!")
+      } else {
+        alert("You lost!")
+      }
+    }, 1000);
 
-  alert(endGameMessage);
-  console.log(endGameMessage);
-  return endGameMessage;
+  }
+  return endRoundMessage;
 }
+
+
 
 function getComputerChoice() {
   let float = Math.random();
@@ -79,4 +103,3 @@ function getComputerChoice() {
   return computerChoice;
 }
 
-game();
