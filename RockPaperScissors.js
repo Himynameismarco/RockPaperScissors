@@ -14,10 +14,14 @@ btnPapier.addEventListener('click', playRound);
 var count = 0;
 let playerWonCount = 0;
 let computerWonCount = 0;
+var gameCount = 1;
 
 
 
 function game() {
+  count = 0;
+  playerWonCount = 0;
+  computerWonCount = 0;
   startScreen.style.display = 'none';
   playBoard.style.display = 'block';
 }
@@ -38,27 +42,27 @@ function playRound(e) {
   let endRoundMessage = "";
   if (playerChoice === schere || playerChoice === stein || playerChoice === papier ) {
     if (playerChoice === computerChoice) {
-      endRoundMessage = "Ihr habt beide " + playerChoice + " gewählt: Nochmal!";
+      endRoundMessage = "Game " + gameCount + ": Ihr habt beide " + playerChoice + " gewählt: Nochmal!";
     } else {
       if ((playerChoice === schere && computerChoice === stein)
           || (playerChoice === stein && computerChoice === papier)
           || (playerChoice === papier && computerChoice === schere)) {
-        endRoundMessage = "Du hast die Runde verloren! Der Computer hatte: " + computerChoice;
+        endRoundMessage = "Game " + gameCount + ": Du hast die Runde verloren! Der Computer hatte: " + computerChoice;
       } else {
-        endRoundMessage = "GEWONNEN!!!! (zumindest diese Runde) Der Computer hatte: " + computerChoice;
+        endRoundMessage = "Game " + gameCount + ": GEWONNEN!!!! (zumindest diese Runde) Der Computer hatte: " + computerChoice;
       }
     }
   } else {
-    console.warn("Wrong input.")
-    endRoundMessage = "Falscher input! Bitte gib 'Schere' oder 'Stein' oder 'Papier' ein.";
+    console.warn("Wrong input.");
+    endRoundMessage = "Game " + gameCount + ": Falscher input! Bitte gib 'Schere' oder 'Stein' oder 'Papier' ein.";
   }
-  if (endRoundMessage.startsWith("Ihr habt")) {
+  if (endRoundMessage.includes("Nochmal")) {
     // nothing
   }
-  if (endRoundMessage.startsWith("Du hast")) {
+  if (endRoundMessage.includes("verloren")) {
     computerWonCount++;
   }
-  if (endRoundMessage.startsWith("GEWONNEN")) {
+  if (endRoundMessage.includes("GEWONNEN")) {
     playerWonCount++;
   }
   if ((count === 4 && playerWonCount === computerWonCount) || endRoundMessage.startsWith("Falscher")) {
@@ -71,6 +75,9 @@ function playRound(e) {
   document.getElementById(currentId).appendChild(paragraph);
   console.log(endRoundMessage);
   if (count === 5) {
+    playBoard.style.display = 'none';
+    startScreen.style.display = 'block';
+
     setTimeout(function () {
       if (playerWonCount == computerWonCount) {
         alert("Ein Unentschieden!")
@@ -80,7 +87,8 @@ function playRound(e) {
       } else {
         alert("You lost!")
       }
-    }, 1000);
+      gameCount++;
+    }, 100);
 
   }
   return endRoundMessage;
